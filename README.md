@@ -141,7 +141,7 @@ function isFunction(obj){
 
 ```
 
-5.写一个通用的判断各种类型的方法如何？
+6.写一个通用的判断各种类型的方法如何？
 
 ```
 var is = function (obj,type) { 
