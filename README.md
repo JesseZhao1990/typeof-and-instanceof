@@ -55,22 +55,27 @@ a instanceof String  //true
 
 那接下来思考一下几个问题：
 
-1.如何判断一个变量是string类型？
+1.如何判断一个变量不存在？（是undefined或者null）
 
 ```
-function isString(s){
-	if(typeof s == "string"){
-		return true;
-	}else if(typeof s =="object" && s instanceof== "String"){
-		return true;
-	}else{
-		return false;
-	}
+
+function isNothing(subject) {
+  return (undefined === subject) || (null === subject);
 }
 
 ```
 
-2.如何判断一个变量是数组呢？
+2.如何判断一个变量是对象? （不是函数，也不是基本数据类型。）
+
+```
+
+function isObject(subject) {
+  return ('object' === typeof subject) && (null !== subject);
+}
+
+```
+
+3.如何判断一个变量是数组？
 
 最简单的方法是如下写法。
 
@@ -84,6 +89,8 @@ function isArray(value){
 
 所以想要严谨一些。兼容iframe这种情况的话。可以用如下的方法。
 
+原理：Object.prototype.toString对任何变量会永远返回这样一个字符串"[object class]"，而这个class就是JavaScript内嵌对象的构造函数的名字。至于用户自定义的变量，则class等于object。因此通过Object.prototype.toString.apply(obj)可以准确的获取变量数据类型。通过Object.prototype.toString可以获得的数据类型包括：Date, Object, String, Number, Boolean, Regexp, Function, undefined, null, Math等。
+
 ```
 
 var isArray = function(obj) { 
@@ -91,8 +98,50 @@ var isArray = function(obj) {
 }
 
 ```
+**注意：**在ES5中增加了新的原生的方法。[参见](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray)
 
-3.写一个通用的判断各种类型的方法如何？
+```
+Array.isArray(obj)
+
+```
+
+由于刚刚那种写法不是原生的写法。效率会低一些。如果想兼容所有浏览器。首先用能力检查。看支持不支持Array.isArray。支持的话直接用。不支持的话再用其他方法。
+
+```
+var isArray = function(obj){
+	if (!Array.isArray){
+		return Object.prototype.toString.call(obj) === '[object Array]'; 
+	}else{
+		return Array.isArray(obj)
+	}
+}
+
+```
+
+4.如何判断一个变量是string类型？
+
+```
+function isString(s){
+	if(typeof s == "string"){
+		return true;
+	}else if(typeof s =="object" && s instanceof== "String"){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+```
+5.如何判断一个变量是function类型？
+
+```
+function isFunction(obj){
+	return typeof(obj)=="function";
+}
+
+```
+
+5.写一个通用的判断各种类型的方法如何？
 
 ```
 var is = function (obj,type) { 
